@@ -1,0 +1,13 @@
+[project]
+name = "karaoke-generator"
+version = "0.1.0"
+description = "Generate karaoke subtitles from lyric.json"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[project.scripts]
+karaoke-gen = "src.cli:main"
+
+[project.optional-dependencies]
+romanize = ["pykakasi>=2.2.1"]

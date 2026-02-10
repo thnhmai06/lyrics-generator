@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/karaoke-generator/config.schema.json",
+  "title": "Karaoke Generator Config",
+  "description": "Configuration for generating Aegisub .ass karaoke subtitles.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "play_res_x",
+    "play_res_y",
+    "wrap_style",
+    "alternate_positions",
+    "next_show_before_seconds",
+    "styles"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional schema reference for editor validation."
+    },
+    "play_res_x": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Script resolution width in pixels."
+    },
+    "play_res_y": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Script resolution height in pixels."
+    },
+    "wrap_style": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "ASS wrap style (e.g., 2 = smart wrap)."
+    },
+    "alternate_positions": {
+      "type": "boolean",
+      "description": "Alternate upper/lower lyric lines for each line index."
+    },
+    "next_show_before_seconds": {
+      "type": "number",
+      "minimum": 0,
+      "description": "How many seconds before start a line (or background) becomes visible."
+    },
+    "styles": {
+      "type": "object",
+      "description": "Style overrides for different lyric roles.",
+      "additionalProperties": { "$ref": "#/$defs/style" },
+      "required": [
+        "current_lower",
+        "current_upper",
+        "preview_lower",
+        "preview_upper",
+        "original_below_lower",
+        "original_below_upper",
+        "background"
+      ],
+      "properties": {
+        "current_lower": {
+          "$ref": "#/$defs/style",
+          "description": "Current lyric line (lower position)."
+        },
+        "current_upper": {
+          "$ref": "#/$defs/style",
+          "description": "Current lyric line (upper position)."
+        },
+        "preview_lower": {
+          "$ref": "#/$defs/style",
+          "description": "Preview line before it becomes current (lower position)."
+        },
+        "preview_upper": {
+          "$ref": "#/$defs/style",
+          "description": "Preview line before it becomes current (upper position)."
+        },
+        "original_below_lower": {
+          "$ref": "#/$defs/style",
+          "description": "Original-script line below romaji when current line is lower."
+        },
+        "original_below_upper": {
+          "$ref": "#/$defs/style",
+          "description": "Original-script line below romaji when current line is upper."
+        },
+        "background": {
+          "$ref": "#/$defs/style",
+          "description": "Background/chorus line shown near the top."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "style": {
+      "type": "object",
+      "description": "Aegisub style override. Colors are #RRGGBB or &HBBGGRR.",
+      "additionalProperties": false,
+      "properties": {
+        "fontname": { "type": "string", "description": "Font face name." },
+        "fontsize": { "type": "number", "minimum": 1, "description": "Font size in points." },
+        "primary_color": { "type": "string", "description": "Primary text color (karaoke fill)." },
+        "secondary_color": { "type": "string", "description": "Secondary text color (unfilled)." },
+        "outline_color": { "type": "string", "description": "Outline color." },
+        "shadow_color": { "type": "string", "description": "Shadow color." },
+        "bold": { "type": "integer", "description": "Bold (0 or 1)." },
+        "italic": { "type": "integer", "description": "Italic (0 or 1)." },
+        "underline": { "type": "integer", "description": "Underline (0 or 1)." },
+        "strikeout": { "type": "integer", "description": "Strikeout (0 or 1)." },
+        "scale_x": { "type": "integer", "minimum": 1, "description": "Horizontal scale percent." },
+        "scale_y": { "type": "integer", "minimum": 1, "description": "Vertical scale percent." },
+        "spacing": { "type": "number", "description": "Extra character spacing." },
+        "angle": { "type": "number", "description": "Rotation angle in degrees." },
+        "border_style": { "type": "integer", "description": "Border style (1 = outline + shadow)." },
+        "outline": { "type": "number", "minimum": 0, "description": "Outline thickness." },
+        "shadow": { "type": "number", "minimum": 0, "description": "Shadow depth." },
+        "alignment": { "type": "integer", "description": "ASS alignment code (1-9)." },
+        "margin_l": { "type": "integer", "minimum": 0, "description": "Left margin in pixels." },
+        "margin_r": { "type": "integer", "minimum": 0, "description": "Right margin in pixels." },
+        "margin_v": { "type": "integer", "minimum": 0, "description": "Vertical margin in pixels." },
+        "encoding": { "type": "integer", "description": "Font encoding (usually 1)." }
+      }
+    }
+  }
+}

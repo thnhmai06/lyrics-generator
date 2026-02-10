@@ -24,12 +24,20 @@ def _escape_ass(text: str) -> str:
     return text.replace("\\", "\\\\").replace("{", "\\{").replace("}", "\\}")
 
 
-def _needs_space(prev: Syllable, current_text: str) -> bool:
+def _needs_space(prev: Syllable, current_text: str, force_space: bool) -> bool:
+    if force_space:
+        return True
     if prev.is_part_of_word:
         return False
     if current_text and current_text[0] in _PUNCTUATION:
         return False
     return True
+
+
+def _romanized_spacer(prev: Syllable, current_text: str) -> str:
+    if current_text and current_text[0] in _PUNCTUATION:
+        return ""
+    return " " if prev.is_part_of_word else "  "
 
 
 def _build_text(
@@ -46,8 +54,14 @@ def _build_text(
 
     for s in syllables:
         text = s.romanized if use_romanized and s.romanized else s.text
-        if prev and _needs_space(prev, text):
-            text = " " + text
+        if prev:
+            if use_romanized:
+                spacer = _romanized_spacer(prev, text)
+                if spacer:
+                    text = spacer + text
+            else:
+                if _needs_space(prev, text, False):
+                    text = " " + text
         text = _escape_ass(text)
 
         if karaoke:
@@ -56,12 +70,10 @@ def _build_text(
                 if gap_cs > 0:
                     parts.append(f"{{\\k{gap_cs}}}")
             dur_cs = max(1, int(round((s.end - s.start) * 100)))
-            prefix = ""
-            if text.startswith(" "):
-                prefix = " "
-                text = text[1:]
-            if prefix:
-                parts.append(prefix)
+            leading = len(text) - len(text.lstrip(" "))
+            if leading:
+                parts.append(" " * leading)
+                text = text[leading:]
             if text:
                 count = len(text)
                 base = dur_cs // count

@@ -40,6 +40,16 @@ def _romanized_spacer(prev: Syllable, current_text: str) -> str:
     return " " if prev.is_part_of_word else "  "
 
 
+def _linear_segments(total_cs: int, count: int) -> List[int]:
+    if count <= 0:
+        return []
+    if count == 1:
+        return [total_cs]
+    base = total_cs // count
+    remainder = total_cs % count
+    return [base + (1 if idx < remainder else 0) for idx in range(count)]
+
+
 def _build_text(
     syllables: List[Syllable],
     use_romanized: bool,
@@ -75,11 +85,8 @@ def _build_text(
                 parts.append(" " * leading)
                 text = text[leading:]
             if text:
-                count = len(text)
-                base = dur_cs // count
-                remainder = dur_cs % count
-                for idx, ch in enumerate(text):
-                    seg = base + (1 if idx < remainder else 0)
+                segments = _linear_segments(dur_cs, len(text))
+                for ch, seg in zip(text, segments):
                     parts.append(f"{{\\k{seg}}}{ch}")
         else:
             parts.append(text)
@@ -329,7 +336,7 @@ def generate_ass(lyrics: Lyrics, config: AssConfig) -> str:
             )
 
     if background_style:
-        prev_bg_end = 0.0
+        active_bg: List[tuple[float, int]] = []
         for bg_line in lyrics.background_lines:
             bg_start = max(0.0, bg_line.start - config.next_show_before_seconds)
             offset_cs = int(round((bg_line.start - bg_start) * 100))
@@ -337,6 +344,7 @@ def generate_ass(lyrics: Lyrics, config: AssConfig) -> str:
             bg_x = _anchor_x(background_style, config)
             bg_y = _anchor_y(background_style, config)
             padding = max(10, int(round(background_style.fontsize * 0.9)))
+            active_bg = [(end, y) for end, y in active_bg if end > bg_start]
             for idx, lead_line in enumerate(line_list):
                 if lead_line.end <= bg_start or lead_line.start >= bg_line.end:
                     continue
@@ -348,9 +356,11 @@ def generate_ass(lyrics: Lyrics, config: AssConfig) -> str:
                     continue
                 _, original_y = _original_pos(use_upper, current_upper, current_lower, original_style, config)
                 bg_y = min(bg_y, original_y - padding)
+            if active_bg:
+                highest_y = min(y for _, y in active_bg)
+                bg_y = min(bg_y, highest_y - padding)
             bg_y = max(0, bg_y)
             out.append(_dialogue_line(3, bg_start, bg_line.end, background_style, f"{{\\pos({bg_x},{bg_y})}}{bg_text}"))
-
-            prev_bg_end = max(prev_bg_end, bg_line.end)
+            active_bg.append((bg_line.end, bg_y))
 
     return "\n".join(out) + "\n"

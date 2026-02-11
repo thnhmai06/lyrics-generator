@@ -47,38 +47,28 @@
       "description": "Style overrides for different lyric roles.",
       "additionalProperties": { "$ref": "#/$defs/style" },
       "required": [
-        "current_lower",
-        "current_upper",
-        "preview_lower",
-        "preview_upper",
-        "original_below_lower",
-        "original_below_upper",
+        "latin_bottom",
+        "latin_top",
+        "original_below_bottom",
+        "original_below_top",
         "background"
       ],
       "properties": {
-        "current_lower": {
+        "latin_bottom": {
           "$ref": "#/$defs/style",
-          "description": "Current lyric line (lower position)."
+          "description": "Latin/romaji lyric line (bottom position)."
         },
-        "current_upper": {
+        "latin_top": {
           "$ref": "#/$defs/style",
-          "description": "Current lyric line (upper position)."
+          "description": "Latin/romaji lyric line (top position)."
         },
-        "preview_lower": {
+        "original_below_bottom": {
           "$ref": "#/$defs/style",
-          "description": "Preview line before it becomes current (lower position)."
+          "description": "Original-script line below romaji when current line is bottom."
         },
-        "preview_upper": {
+        "original_below_top": {
           "$ref": "#/$defs/style",
-          "description": "Preview line before it becomes current (upper position)."
-        },
-        "original_below_lower": {
-          "$ref": "#/$defs/style",
-          "description": "Original-script line below romaji when current line is lower."
-        },
-        "original_below_upper": {
-          "$ref": "#/$defs/style",
-          "description": "Original-script line below romaji when current line is upper."
+          "description": "Original-script line below romaji when current line is top."
         },
         "background": {
           "$ref": "#/$defs/style",
@@ -93,12 +83,44 @@
       "description": "Aegisub style override. Colors are #RRGGBB or &HBBGGRR.",
       "additionalProperties": false,
       "properties": {
-        "fontname": { "type": "string", "description": "Font face name." },
-        "fontsize": { "type": "number", "minimum": 1, "description": "Font size in points." },
-        "primary_color": { "type": "string", "description": "Primary text color (karaoke fill)." },
-        "secondary_color": { "type": "string", "description": "Secondary text color (unfilled)." },
-        "outline_color": { "type": "string", "description": "Outline color." },
-        "shadow_color": { "type": "string", "description": "Shadow color." },
+        "fontname": {
+          "type": "string",
+          "enum": [
+            "Carrois Gothic SC",
+            "Comic Sans MS",
+            "Courier New",
+            "Lucida Console",
+            "Monotype Corsiva",
+            "Roboto",
+            "Times New Roman"
+          ],
+          "description": "Font face name (YouTube-supported fonts only)."
+        },
+        "fontsize": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Font size in points. Non-default styles scale relative to the default style in YouTube." 
+        },
+        "primary_color": {
+          "type": "string",
+          "pattern": "^(#([0-9A-Fa-f]{6})|&H([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})&?)$",
+          "description": "Primary text color (karaoke fill)."
+        },
+        "secondary_color": {
+          "type": "string",
+          "pattern": "^(#([0-9A-Fa-f]{6})|&H([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})&?)$",
+          "description": "Secondary text color (unfilled)."
+        },
+        "outline_color": {
+          "type": "string",
+          "pattern": "^(#([0-9A-Fa-f]{6})|&H([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})&?)$",
+          "description": "Outline color."
+        },
+        "shadow_color": {
+          "type": "string",
+          "pattern": "^(#([0-9A-Fa-f]{6})|&H([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})&?)$",
+          "description": "Shadow color."
+        },
         "bold": { "type": "integer", "description": "Bold (0 or 1)." },
         "italic": { "type": "integer", "description": "Italic (0 or 1)." },
         "underline": { "type": "integer", "description": "Underline (0 or 1)." },
@@ -108,8 +130,8 @@
         "spacing": { "type": "number", "description": "Extra character spacing." },
         "angle": { "type": "number", "description": "Rotation angle in degrees." },
         "border_style": { "type": "integer", "description": "Border style (1 = outline + shadow)." },
-        "outline": { "type": "number", "minimum": 0, "description": "Outline thickness." },
-        "shadow": { "type": "number", "minimum": 0, "description": "Shadow depth." },
+        "outline": { "type": "number", "minimum": 0, "description": "Outline thickness (YouTube checks only 0 vs >0)." },
+        "shadow": { "type": "number", "minimum": 0, "description": "Shadow depth (YouTube checks only 0 vs >0)." },
         "alignment": { "type": "integer", "description": "ASS alignment code (1-9)." },
         "margin_l": { "type": "integer", "minimum": 0, "description": "Left margin in pixels." },
         "margin_r": { "type": "integer", "minimum": 0, "description": "Right margin in pixels." },

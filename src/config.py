@@ -8,7 +8,7 @@ from typing import Dict, Optional
 @dataclass(frozen=True)
 class StyleConfig:
     name: str
-    fontname: str = "Arial"
+    fontname: str = "Roboto"
     fontsize: int = 48
     primary_color: str = "#FFD86B"
     secondary_color: str = "#FFFFFF"
@@ -45,6 +45,9 @@ class AssConfig:
 def _to_ass_color(value: str) -> str:
     v = value.strip()
     if v.upper().startswith("&H"):
+        raw = v[2:]
+        if len(raw) == 6:
+            return f"&H00{raw}".upper()
         return v.upper()
     if v.startswith("#"):
         v = v[1:]
@@ -53,7 +56,7 @@ def _to_ass_color(value: str) -> str:
     r = v[0:2]
     g = v[2:4]
     b = v[4:6]
-    return f"&H{b}{g}{r}".upper()
+    return f"&H00{b}{g}{r}".upper()
 
 
 def _build_style(name: str, data: dict, default: StyleConfig) -> StyleConfig:
@@ -63,12 +66,10 @@ def _build_style(name: str, data: dict, default: StyleConfig) -> StyleConfig:
 
 def default_config() -> AssConfig:
     styles = {
-        "current_lower": StyleConfig(name="CurrentLower", margin_v=70),
-        "current_upper": StyleConfig(name="CurrentUpper", margin_v=120),
-        "preview_lower": StyleConfig(name="PreviewLower", primary_color="#FFFFFF", secondary_color="#FFFFFF", margin_v=70),
-        "preview_upper": StyleConfig(name="PreviewUpper", primary_color="#FFFFFF", secondary_color="#FFFFFF", margin_v=120),
-        "original_below_lower": StyleConfig(name="OriginalBelowLower", fontsize=34, margin_v=40),
-        "original_below_upper": StyleConfig(name="OriginalBelowUpper", fontsize=34, margin_v=90),
+        "latin_bottom": StyleConfig(name="LatinBottom", margin_v=70),
+        "latin_top": StyleConfig(name="LatinTop", margin_v=120),
+        "original_below_bottom": StyleConfig(name="OriginalBelowBottom", fontsize=34, margin_v=40),
+        "original_below_top": StyleConfig(name="OriginalBelowTop", fontsize=34, margin_v=90),
         "background": StyleConfig(name="Background", fontsize=40, primary_color="#FFD86B", secondary_color="#FFFFFF", alignment=2, margin_v=210),
     }
     return AssConfig(styles=styles)

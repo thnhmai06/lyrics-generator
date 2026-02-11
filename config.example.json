@@ -6,8 +6,8 @@
   "alternate_positions": true,
   "next_show_before_seconds": 3.0,
   "styles": {
-    "current_lower": {
-      "fontname": "Arial",
+    "latin_bottom": {
+      "fontname": "Roboto",
       "fontsize": 56,
       "primary_color": "#FFD86B",
       "secondary_color": "#FFFFFF",
@@ -23,8 +23,8 @@
       "margin_r": 120,
       "margin_v": 80
     },
-    "current_upper": {
-      "fontname": "Arial",
+    "latin_top": {
+      "fontname": "Roboto",
       "fontsize": 56,
       "primary_color": "#FFD86B",
       "secondary_color": "#FFFFFF",
@@ -40,42 +40,8 @@
       "margin_r": 120,
       "margin_v": 150
     },
-    "preview_lower": {
-      "fontname": "Arial",
-      "fontsize": 56,
-      "primary_color": "#FFFFFF",
-      "secondary_color": "#FFFFFF",
-      "outline_color": "#000000",
-      "shadow_color": "#000000",
-      "bold": 0,
-      "italic": 0,
-      "border_style": 1,
-      "outline": 2.5,
-      "shadow": 2.0,
-      "alignment": 2,
-      "margin_l": 120,
-      "margin_r": 120,
-      "margin_v": 80
-    },
-    "preview_upper": {
-      "fontname": "Arial",
-      "fontsize": 56,
-      "primary_color": "#FFFFFF",
-      "secondary_color": "#FFFFFF",
-      "outline_color": "#000000",
-      "shadow_color": "#000000",
-      "bold": 0,
-      "italic": 0,
-      "border_style": 1,
-      "outline": 2.5,
-      "shadow": 2.0,
-      "alignment": 2,
-      "margin_l": 120,
-      "margin_r": 120,
-      "margin_v": 150
-    },
-    "original_below_lower": {
-      "fontname": "Arial",
+    "original_below_bottom": {
+      "fontname": "Roboto",
       "fontsize": 34,
       "primary_color": "#FFD86B",
       "secondary_color": "#FFFFFF",
@@ -91,8 +57,8 @@
       "margin_r": 120,
       "margin_v": 40
     },
-    "original_below_upper": {
-      "fontname": "Arial",
+    "original_below_top": {
+      "fontname": "Roboto",
       "fontsize": 34,
       "primary_color": "#FFD86B",
       "secondary_color": "#FFFFFF",
@@ -109,7 +75,7 @@
       "margin_v": 90
     },
     "background": {
-      "fontname": "Arial",
+      "fontname": "Roboto",
       "fontsize": 40,
       "primary_color": "#FFD86B",
       "secondary_color": "#FFFFFF",

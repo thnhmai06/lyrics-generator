@@ -2,6 +2,10 @@
 
 Generate Aegisub-compatible .ass karaoke subtitles from lyric.json files.
 
+## Examples
+- Machine Love: [Video](http://youtu.be/sVjO3nAIKow)
+- Birdbrain: [Video](https://youtu.be/0iVlSNpq8i8)
+
 ## Quick start
 
 ```bash

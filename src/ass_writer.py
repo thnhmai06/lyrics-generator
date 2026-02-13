@@ -154,6 +154,20 @@ def _dialogue_line(layer: int, start: float, end: float, style: StyleConfig, tex
     )
 
 
+def _override_tag(style: StyleConfig, x: int, y: int) -> str:
+    parts = [f"\\pos({x},{y})"]
+    fade_in = int(round(max(0.0, style.fade_in_ms)))
+    fade_out = int(round(max(0.0, style.fade_out_ms)))
+    if fade_in or fade_out:
+        parts.append(f"\\fad({fade_in},{fade_out})")
+    return "{" + "".join(parts) + "}"
+
+
+def _end_with_fade(end: float, style: StyleConfig) -> float:
+    fade_out_s = max(0.0, style.fade_out_ms) / 1000.0
+    return end + fade_out_s
+
+
 def _get_style(styles: dict[str, StyleConfig], *keys: str) -> StyleConfig:
     for key in keys:
         if key in styles:
@@ -242,19 +256,48 @@ def generate_ass(lyrics: Lyrics, config: AssConfig) -> str:
         current_style = current_upper if use_upper else current_lower
         if use_upper:
             display_start = max(display_start, last_end_top)
-            last_end_top = max(last_end_top, line.end)
         else:
             display_start = max(display_start, last_end_bottom)
-            last_end_bottom = max(last_end_bottom, line.end)
-        meta.append((has_romanized, non_latin, use_romanized, use_upper, current_style, display_start))
-
-    for idx, line in enumerate(line_list):
-        has_romanized, non_latin, use_romanized, use_upper, current_style, display_start = meta[idx]
-        offset_cs = int(round((line.start - display_start) * 100))
 
         original_style = None
         if non_latin and has_romanized:
             original_style = original_below_upper if use_upper else original_below_lower
+        current_end = _end_with_fade(line.end, current_style)
+        original_end = _end_with_fade(line.end, original_style) if original_style else line.end
+        effective_end = max(current_end, original_end)
+
+        if use_upper:
+            last_end_top = max(last_end_top, effective_end)
+        else:
+            last_end_bottom = max(last_end_bottom, effective_end)
+
+        meta.append(
+            (
+                has_romanized,
+                non_latin,
+                use_romanized,
+                use_upper,
+                current_style,
+                display_start,
+                current_end,
+                original_style,
+                original_end,
+            )
+        )
+
+    for idx, line in enumerate(line_list):
+        (
+            has_romanized,
+            non_latin,
+            use_romanized,
+            use_upper,
+            current_style,
+            display_start,
+            current_end,
+            original_style,
+            original_end,
+        ) = meta[idx]
+        offset_cs = int(round((line.start - display_start) * 100))
 
         base_x = _anchor_x(current_style, config)
         base_y = _anchor_y(current_style, config)
@@ -265,15 +308,22 @@ def generate_ass(lyrics: Lyrics, config: AssConfig) -> str:
             for neighbor in (idx - 1, idx + 1):
                 if neighbor < 0 or neighbor >= len(line_list):
                     continue
-                n_has_romanized, n_non_latin, _, n_use_upper, n_style, n_display_start = meta[neighbor]
+                (
+                    n_has_romanized,
+                    n_non_latin,
+                    _,
+                    n_use_upper,
+                    n_style,
+                    n_display_start,
+                    _,
+                    n_original_style,
+                    _,
+                ) = meta[neighbor]
                 if n_use_upper:
                     continue
                 n_line = line_list[neighbor]
                 if n_display_start >= line.end or n_line.end <= display_start:
                     continue
-                n_original_style = None
-                if n_non_latin and n_has_romanized:
-                    n_original_style = original_below_lower
                 n_base_y = _anchor_y(n_style, config)
                 n_top = n_base_y - n_style.fontsize
                 padding = max(10, int(round(current_style.fontsize * 0.4)))
@@ -286,24 +336,26 @@ def generate_ass(lyrics: Lyrics, config: AssConfig) -> str:
             karaoke=True,
             start_offset_cs=offset_cs,
         )
-        current_text = f"{{\\pos({base_x},{adjusted_y})}}{current_text}"
-        out.append(_dialogue_line(1, display_start, line.end, current_style, current_text))
+        current_text = f"{_override_tag(current_style, base_x, adjusted_y)}{current_text}"
+        out.append(_dialogue_line(1, display_start, current_end, current_style, current_text))
 
         if original_style:
+            original_base_y = _anchor_y(original_style, config)
             original_text = _build_text(
                 line.syllables,
                 False,
                 karaoke=True,
                 start_offset_cs=offset_cs,
             )
-            original_y = adjusted_y + original_offset
-            original_text = f"{{\\pos({base_x},{original_y})}}{original_text}"
-            out.append(_dialogue_line(2, display_start, line.end, original_style, original_text))
+            original_y = max(adjusted_y + original_offset, original_base_y)
+            original_text = f"{_override_tag(original_style, base_x, original_y)}{original_text}"
+            out.append(_dialogue_line(2, display_start, original_end, original_style, original_text))
 
     if background_style:
         active_bg: List[tuple[float, int]] = []
         for bg_line in lyrics.background_lines:
             bg_start = max(0.0, bg_line.start - config.next_show_before_seconds)
+            bg_end = _end_with_fade(bg_line.end, background_style)
             offset_cs = int(round((bg_line.start - bg_start) * 100))
             bg_text = _build_text(bg_line.syllables, False, karaoke=True, start_offset_cs=offset_cs)
             bg_x = _anchor_x(background_style, config)
@@ -313,10 +365,19 @@ def generate_ass(lyrics: Lyrics, config: AssConfig) -> str:
             for idx, lead_line in enumerate(line_list):
                 if lead_line.end <= bg_start or lead_line.start >= bg_line.end:
                     continue
-                has_romanized, non_latin, _, use_upper, _, _ = meta[idx]
+                (
+                    has_romanized,
+                    non_latin,
+                    _,
+                    use_upper,
+                    _,
+                    _,
+                    _,
+                    original_style,
+                    _,
+                ) = meta[idx]
                 if not (non_latin and has_romanized):
                     continue
-                original_style = original_below_upper if use_upper else original_below_lower
                 if not original_style:
                     continue
                 original_y = _anchor_y(original_style, config)
@@ -329,11 +390,11 @@ def generate_ass(lyrics: Lyrics, config: AssConfig) -> str:
                 _dialogue_line(
                     3,
                     bg_start,
-                    bg_line.end,
+                    bg_end,
                     background_style,
-                    f"{{\\pos({bg_x},{bg_y})}}{bg_text}",
+                    f"{_override_tag(background_style, bg_x, bg_y)}{bg_text}",
                 )
             )
-            active_bg.append((bg_line.end, bg_y))
+            active_bg.append((bg_end, bg_y))
 
     return "\n".join(out) + "\n"

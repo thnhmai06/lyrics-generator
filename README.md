@@ -21,6 +21,11 @@ python -m src \
 - Current line uses karaoke timing; next line is displayed as a guide.
 - For Japanese lyrics, romaji is generated automatically when `pykakasi` is available.
 - `next_show_before_seconds` controls how early the next line appears and how long the previous line remains during gaps.
+- Style overrides can include `fade_in_ms` and `fade_out_ms` to fade text in/out.
+
+## YouTube styling constraints
+
+- Subtitle styling is designed to be compatible with [YTSubConverter](https://raw.githubusercontent.com/arcusmaximus/YTSubConverter/refs/heads/master/README.md).
 
 ## Config schema
 

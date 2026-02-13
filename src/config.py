@@ -23,13 +23,15 @@ class StyleConfig:
     spacing: float = 0.0
     angle: float = 0.0
     border_style: int = 1
-    outline: float = 3.0
+    outline: float = 3.5
     shadow: float = 2.0
     alignment: int = 2
     margin_l: int = 120
     margin_r: int = 120
     margin_v: int = 80
     encoding: int = 1
+    fade_in_ms: float = 120.0
+    fade_out_ms: float = 180.0
 
 
 @dataclass(frozen=True)
@@ -67,10 +69,28 @@ def _build_style(name: str, data: dict, default: StyleConfig) -> StyleConfig:
 def default_config() -> AssConfig:
     styles = {
         "latin_bottom": StyleConfig(name="LatinBottom", margin_v=70),
-        "latin_top": StyleConfig(name="LatinTop", margin_v=120),
-        "original_below_bottom": StyleConfig(name="OriginalBelowBottom", fontsize=34, margin_v=40),
-        "original_below_top": StyleConfig(name="OriginalBelowTop", fontsize=34, margin_v=90),
-        "background": StyleConfig(name="Background", fontsize=40, primary_color="#FFD86B", secondary_color="#FFFFFF", alignment=2, margin_v=210),
+        "latin_top": StyleConfig(name="LatinTop", margin_v=170),
+        "original_below_bottom": StyleConfig(
+            name="OriginalBelowBottom",
+            fontsize=34,
+            margin_v=40,
+            outline=2.5,
+        ),
+        "original_below_top": StyleConfig(
+            name="OriginalBelowTop",
+            fontsize=34,
+            margin_v=140,
+            outline=2.5,
+        ),
+        "background": StyleConfig(
+            name="Background",
+            fontsize=40,
+            primary_color="#FFD86B",
+            secondary_color="#FFFFFF",
+            alignment=2,
+            margin_v=210,
+            outline=2.5,
+        ),
     }
     return AssConfig(styles=styles)
 

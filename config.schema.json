@@ -136,7 +136,17 @@
         "margin_l": { "type": "integer", "minimum": 0, "description": "Left margin in pixels." },
         "margin_r": { "type": "integer", "minimum": 0, "description": "Right margin in pixels." },
         "margin_v": { "type": "integer", "minimum": 0, "description": "Vertical margin in pixels." },
-        "encoding": { "type": "integer", "description": "Font encoding (usually 1)." }
+        "encoding": { "type": "integer", "description": "Font encoding (usually 1)." },
+        "fade_in_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Fade-in time in milliseconds for this style."
+        },
+        "fade_out_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Fade-out time in milliseconds for this style."
+        }
       }
     }
   }
